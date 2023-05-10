@@ -7,4 +7,4 @@ These visual features are cues which signal to participants which of the four ba
 
 The cues are geomatric shapes with different visual features (i.e., color, shape and texture).
 
-This task was made by Romy Shufman and Maya Marcus as part of their Project in the lab as a part of Ido Ben-Artzi's PhD research.
+This task was made by Romy Shufman and Maya Marcus as part of their Project in the lab and is part of Ido Ben-Artzi's PhD research.
