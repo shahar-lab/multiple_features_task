@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Game</title>
+    
+     <!-- online run
+    <script src="lib/vendors/jspsych-7.1.2/jspsych.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-html-keyboard-response.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-html-button-response.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-preload.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-fullscreen.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-instructions.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-survey-likert.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-survey-text.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-survey-multi-choice.js"></script>
+    <link rel="stylesheet" href="lib/vendors/jspsych-7.1.2/jspsych.css">
+    <link href="./css/my_exp.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="lib/jspsych-7-pavlovia-2022.1.1.js"></script>-->
+
+    <!-- local run-->
+    <script src="jspsych/dist/jspsych.js"></script>
+    <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych/dist/plugin-preload.js"></script>
+    <script src="jspsych/dist/plugin-instructions.js"></script>
+    <script src="jspsych/dist/plugin-survey-likert.js"></script>
+    <script src="jspsych/dist/plugin-survey-text.js"></script>
+    <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+    <script src="jspsych/dist/plugin-fullscreen.js"></script>
+    <script src="jspsych/dist/plugin-html-slider-response.js"></script>
+    <link href="jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />
+    <link href="css/my_exp.css" rel="stylesheet" type="text/css"/>
+
+</head>
+
+<body>
+    <script>
+        var jsPsych = initJsPsych({
+            on_finish: function () {
+                download_csv(jsPsych.data.get().csv());
+            }
+         });
+        /*this defines the css properties according to the window_screen_size*/
+        var root = document.documentElement;
+        var vis_angle_px = 105
+        var square_width = 51.4
+        //---------------------------------------------------------------------------------------------
+        root.style.setProperty('--left_card', window.screen.width / 2 - 350 + "px");
+        root.style.setProperty('--right_card', window.screen.width / 2 -  350 + "px");
+        root.style.setProperty('--middle_left_card', window.screen.width / 2 - 160 + "px");
+        root.style.setProperty('--middle_right_card', window.screen.width / 2 - 160 + "px");
+
+        root.style.setProperty('--top_card', window.screen.height / 2 - 90 + "px");
+        root.style.setProperty('--top_reward', window.screen.height / 2 + "px");
+        root.style.setProperty('--left_reward', window.screen.width / 2 + "px");
+
+        // capture info from Prolific
+        var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+        if (subject_id==undefined){
+            subject_id="DEMO"
+        }
+        var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+        var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+
+        jsPsych.data.addProperties({
+        subject_id: subject_id,
+        study_id: study_id,
+        session_id: session_id
+        });
+        /*---------------------------------------------------- 
+        Card game starts
+        ------------------------------------------------------*/
+        var timeline = [];
+        /*init connection with pavlovia.org
+        var pavlovia_init = {
+			type: jsPsychPavlovia,
+			command: "init"
+
+        };
+        timeline.push(pavlovia_init);*/
+        /*full screen */
+        var enter_fullscreen = {
+            type: jsPsychFullscreen,
+            fullscreen_mode: true,
+            message: '<p>The experiment will get into fullscreen mode once you click the button below. <br> <b>Before continuing we want you to check that:</b> <br> 1. Your browser is on 100% zoom <br>2. Your keyboard is set to the English language</p>'
+            ,button_label: "My screen is on 100% zoom and my keyboard is set to English. Let's continue!"    
+        }
+        
+        timeline.push(enter_fullscreen)
+        
+        /*---------------------------------------------------- 
+        Define images
+        ------------------------------------------------------*/
+
+        var example_deck0=['images/practice_elements/conversation_green_blank.png', 'images/practice_elements/conversation_ocean_blank.png']
+        var example_deck1= ['images/practice_elements/heart_bluish_blank.png','images/practice_elements/star_purple_blank.png', 'images/practice_elements/heart_purple_blank.png','images/practice_elements/star_bluish_blank.png']
+        var example_deck2= ['images/practice_elements/parallel_torq_nut.png', 'images/practice_elements/trapezoid_fuchsia_banana.png', 'images/practice_elements/parallel_fuchsia_nut.png', 'images/practice_elements/trapezoid_torq_banana.png', 'images/practice_elements/trapezoid_torq_nut.png', 'images/practice_elements/parallel_fuchsia_banana.png', 'images/practice_elements/trapezoid_fuchsia_nut.png', 'images/practice_elements/parallel_torq_banana.png']
+        var practice_deck_images = [example_deck0,example_deck1,example_deck2]
+
+        var example_reward0=['images/practice_reward/conversation_green_blank.png', 'images/practice_reward/conversation_ocean_blank.png']
+        var example_reward1= ['images/practice_reward/heart_bluish_blank.png','images/practice_reward/star_purple_blank.png', 'images/practice_reward/heart_purple_blank.png','images/practice_reward/star_bluish_blank.png']
+        var example_reward2= ['images/practice_reward/parallel_torq_nut.png', 'images/practice_reward/trapezoid_fuchsia_banana.png', 'images/practice_reward/parallel_fuchsia_nut.png', 'images/practice_reward/trapezoid_torq_banana.png', 'images/practice_reward/trapezoid_torq_nut.png', 'images/practice_reward/parallel_fuchsia_banana.png', 'images/practice_reward/trapezoid_fuchsia_nut.png', 'images/practice_reward/parallel_torq_banana.png']
+        var practice_reward_images = [example_reward0,example_reward1,example_reward2]
+
+        //2D array - array i contains the cards for block type i
+        var test_deck0=['images/test_elements/pink_triangle.png', 'images/test_elements/green_triangle.png']
+        var test_deck1= ['images/test_elements/red_rhombus.png', 'images/test_elements/yellow_pentagon.png','images/test_elements/red_pentagon.png', 'images/test_elements/yellow_rhombus.png']
+        var test_deck2= ['images/test_elements/blue_circle_heart.png',
+        'images/test_elements/orange_square_star.png',
+         'images/test_elements/orange_circle_heart.png',
+         'images/test_elements/blue_square_star.png',
+         'images/test_elements/blue_square_heart.png',
+         'images/test_elements/orange_circle_star.png',
+          'images/test_elements/orange_square_heart.png',
+           'images/test_elements/blue_circle_star.png' 
+            ]
+        var test_deck_images = [test_deck0,test_deck1,test_deck2]
+
+        var reward_deck0=['images/reward_elements/pink_triangle.png', 'images/reward_elements/green_triangle.png']
+        var reward_deck1= ['images/reward_elements/red_rhombus.png', 'images/reward_elements/yellow_pentagon.png','images/reward_elements/red_pentagon.png', 'images/reward_elements/yellow_rhombus.png']
+        var reward_deck2= ['images/reward_elements/blue_circle_heart.png',
+        'images/reward_elements/orange_square_star.png',
+         'images/reward_elements/orange_circle_heart.png',
+         'images/reward_elements/blue_square_star.png',
+         'images/reward_elements/blue_square_heart.png',
+         'images/reward_elements/orange_circle_star.png',
+          'images/reward_elements/orange_square_heart.png',
+           'images/reward_elements/blue_circle_star.png' 
+            ]
+        var reward_deck_images = [reward_deck0,reward_deck1,reward_deck2]
+
+        var reward_images = ['images/zero_coins.png', 'images/won1-no-back1.png']
+        var background='images/test_elements/background.png'
+        //preload
+        var preload = {
+        type: jsPsychPreload,
+        images: [example_deck0,example_deck1,example_deck2,test_deck0,test_deck1,test_deck2,reward_images,reward_deck0,reward_deck1,reward_deck2,background]
+        };
+        timeline.push(preload)
+        /*----------------------------------------------------
+        Define game-related settings
+        ------------------------------------------------------*/
+        var block_type=Number(jsPsych.randomization.sampleWithoutReplacement([0,1,2], 1));
+        var practice_order=jsPsych.randomization.shuffle([0,0,1,1,2,2])
+        var practice_number=-1;
+        var background_locs;
+        var invalid=false;
+        var invalid_from_all_keyboard=false;
+        var first_loc;
+        var second_loc;
+        var prob_reward;
+        var sum_of_reward = 0;
+
+        var FB_matrix1 = []; //first option for random walk
+        FB_matrix1[0] = [0.157020842, 0.15, 0.15, 0.156040006, 0.15, 0.15, 0.15, 0.15, 0.15, 0.195488406, 0.238761738, 0.208685625, 0.176161325, 0.189415947, 0.179116023, 0.1990778, 0.15, 0.154505329, 0.20971304, 0.248624145, 0.243429274, 0.222942467, 0.25854102, 0.32771788, 0.346910101, 0.363247772, 0.412600622, 0.394723848, 0.379588708, 0.39092306, 0.37934023, 0.422537053, 0.42854826, 0.414645187, 0.411459023, 0.357681821, 0.319182052, 0.271389827, 0.331717046, 0.337330719, 0.360532922, 0.40079545, 0.4120548, 0.419174746, 0.49439884, 0.445138221, 0.462633019, 0.472754153, 0.446989894, 0.450821354]
+        FB_matrix1[1] = [0.619709433, 0.638847416, 0.673558252, 0.650024264, 0.609580707, 0.643928684, 0.632410914, 0.660272086, 0.654805088, 0.654415047, 0.651459173, 0.622871469, 0.621873043, 0.64873017, 0.614258789, 0.624416768, 0.584623601, 0.549768795, 0.501743755, 0.463638119, 0.572912292, 0.521565163, 0.483212291, 0.416664343, 0.406414638, 0.424988911, 0.423891952, 0.477917326, 0.499917072, 0.527574737, 0.55610902, 0.542712218, 0.558499434, 0.630558855, 0.630067304, 0.633714377, 0.66237771, 0.642321058, 0.598826994, 0.537534203, 0.541353187, 0.565797459, 0.625624932, 0.673666597, 0.709709244, 0.732720996, 0.63950116, 0.653624258, 0.59332484, 0.584050675]
+        FB_matrix1[2] = [0.455624574, 0.447060403, 0.464653849, 0.468050463, 0.479689254, 0.489298433, 0.49896292, 0.503229792, 0.426905337, 0.43950215, 0.424029653, 0.373946687, 0.309792793, 0.299386806, 0.330861332, 0.390680702, 0.368970152, 0.364360177, 0.30563429, 0.304244594, 0.231771321, 0.189074154, 0.232423255, 0.167898662, 0.223806442, 0.15, 0.160403157, 0.15, 0.15, 0.199845574, 0.252707012, 0.240813444, 0.31536487, 0.238292789, 0.158989637, 0.160086403, 0.157452045, 0.176706854, 0.163972711, 0.156086284, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.163664995, 0.191478745, 0.179692284, 0.15]
+        FB_matrix1[3] = [0.57748884, 0.547476684, 0.564055839, 0.533591457, 0.548975462, 0.530164744, 0.449644452, 0.400668363, 0.363860908, 0.384457003, 0.381435283, 0.395809752, 0.418116153, 0.444540894, 0.461018357, 0.499538162, 0.501779212, 0.444644815, 0.41071651, 0.412544239, 0.404462135, 0.394042659, 0.427578923, 0.414173854, 0.432006777, 0.409534504, 0.383596933, 0.366896641, 0.455084108, 0.475709276, 0.523782927, 0.467327472, 0.456414917, 0.399816399, 0.404586093, 0.419517324, 0.426407739, 0.408329963, 0.442421569, 0.439231949, 0.422045599, 0.398831425, 0.445303813, 0.442015842, 0.391095483, 0.39784058, 0.324718947, 0.306483515, 0.337784885, 0.36036193]
+
+        var FB_matrix2 = []; //second option for random walk
+        FB_matrix2[0] = [0.845975582487881, 0.85, 0.81123981623416, 0.789141099022303, 0.751663824866457, 0.72735351859757, 0.742347793238537, 0.753754227215819, 0.746075023900087, 0.737343506480181, 0.692984957684149, 0.675577628229723, 0.745556748998617, 0.71125837690303, 0.694514713755348, 0.714388446287687, 0.783630386810177, 0.770445763793407, 0.824521546472684, 0.790480453126701, 0.85, 0.85, 0.843176961956961, 0.85, 0.828195931451447, 0.755869600658702, 0.776593185122782, 0.81606989556573, 0.826657856553749, 0.85, 0.763451985095631, 0.768782826705445, 0.72315453750397, 0.744041295284946, 0.755981819695817, 0.763692087417252, 0.715492666976828, 0.665323379127968, 0.661767041062244, 0.636919337440861, 0.699988753390204, 0.7057964737575, 0.697944056588352, 0.668310166782719, 0.703052596271881, 0.670977141593213, 0.657559374880663, 0.657697260617624, 0.691640971133472, 0.611226726190539]
+        FB_matrix2[1] = [0.375602713995613, 0.48282509800063, 0.494525989075682, 0.543622095082177, 0.516946927374032, 0.475244820667582, 0.400760299848026, 0.381880563982018, 0.347755215789558, 0.377812300016978, 0.380163069942995, 0.38413161981098, 0.26760715260041, 0.260422784855496, 0.268155079883975, 0.251406281945099, 0.209543175321419, 0.151202231088302, 0.224978510431589, 0.272585102536807, 0.250095598302914, 0.303130386824021, 0.37655862364951, 0.425015108588993, 0.466527045391378, 0.475585372727463, 0.49537639097554, 0.454527684102617, 0.458159320947147, 0.484668262193617, 0.495795588746343, 0.517344460155327, 0.52701976983929, 0.53399907556477, 0.503566092126325, 0.473970606757295, 0.496098948910575, 0.486695446679407, 0.450300736976094, 0.398544662174359, 0.352858472073834, 0.398636195191715, 0.426971077722684, 0.412985650447782, 0.416677577190978, 0.395748342240411, 0.327448231157449, 0.327799692492665, 0.251975712140467, 0.340218688032523]
+        FB_matrix2[2] = [0.193985212384723, 0.206956045541635, 0.210698560537085, 0.167181866606574, 0.160385970678125, 0.222730035820976, 0.198469637701887, 0.172671623566782, 0.162798512889768, 0.15, 0.15, 0.15, 0.15, 0.199552385667056, 0.174287773822883, 0.269670686810636, 0.252786940174757, 0.189125237952722, 0.225414299620099, 0.243618922388333, 0.242317154413386, 0.289912399513056, 0.373745950650062, 0.359084647637115, 0.403656129661135, 0.441680486222199, 0.44164400896872, 0.414427808841568, 0.432450359373388, 0.422407688676513, 0.478765980026055, 0.43991321252404, 0.460515346014774, 0.477542614359421, 0.54663951246181, 0.5718563829427, 0.599289460718547, 0.632344042749078, 0.645294843658166, 0.603839822122366, 0.626033976530081, 0.617148808754216, 0.605145559853044, 0.60581328339173, 0.634693544130636, 0.608156883430918, 0.638272917443395, 0.759248046030977, 0.800744794715403, 0.743147931095743]
+        FB_matrix2[3] = [0.657246048073284, 0.618086829682723, 0.595684150521574, 0.557190569488012, 0.564740500495189, 0.537794873440958, 0.572478028772034, 0.544284759819363, 0.565512040769269, 0.609162316383323, 0.612692635970217, 0.599074184466825, 0.624430540771649, 0.61362478265891, 0.589115858605799, 0.659608157197614, 0.609923227373039, 0.646017979685294, 0.678981124134102, 0.614548145493107, 0.56383454031102, 0.549029586091234, 0.55849401531693, 0.534321380083867, 0.524323955534099, 0.470320959464802, 0.472906551046881, 0.538562286829453, 0.478144939931822, 0.446185189590624, 0.381082715549124, 0.366965796117453, 0.358985000652961, 0.372394934108319, 0.344972096143612, 0.385304745329059, 0.353303088597743, 0.354771200328839, 0.302906027656004, 0.295663486413838, 0.352017105089281, 0.354826600774228, 0.318276430004339, 0.33619164577473, 0.32106888741154, 0.359266139343765, 0.341415475662829, 0.281568937933076, 0.282294114905856, 0.199795953234659]
+
+        // capture info from Prolific
+        var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+        // randomly assigning the random walk to be either 1 or 2
+        if (subject_id != undefined) {
+            var sign = subject_id[subject_id.length - 1];
+            if (['0', '1', '2', '3', '4', 'a', 'b', 'c'].includes(sign)) {
+                condition_random_walk = 1
+                var FB_matrix = FB_matrix1
+            }
+            else {
+                condition_random_walk = 2
+                var FB_matrix = FB_matrix2
+            }
+        }
+        else {
+            condition_random_walk = 1
+            var FB_matrix = FB_matrix1
+        }
+
+        /*----------------------------------------------------
+        Start instructions
+        ------------------------------------------------------*/
+        var instructions_cards = {
+            on_start: function () {
+                if (document.querySelector('#cursor-toggle') != null) {
+                    document.querySelector('#cursor-toggle').remove()
+                }
+            },
+            type: jsPsychInstructions,
+            pages: ["<p><b><u>Welcome to the slot machine game</u></b></p>"
+                + "<p style='text-align:center'>Your winnings in this game will earn you an additional payment bonus for the study."
+                + " If no extra money will be earned in the game, you will still get £5 per hour for completing this part of the study."
+                + " <br>However, <b>you can gain up to an extra £1 based on winnings in the game. <br><br> Please note: You will be paid only if you complete the second part of the study tomorrow!</b></p>",
+            "<p style='text-align:center'> We will now provide instructions regarding the slot machine game. <b>Please read them carefully.</b> <br>"
+            + "Feel free to go back and forth between the screens.</p> "
+            , "<p style='text-align:center'>At the end of the instructions, <b>we will ask you to complete a short quiz about them</b>, to make sure everything is well understood.</p>",
+            "<p style='text-align:center'> In the game to follow, you will be presented with <b>four slot machines</b>, each of which will look as shown below.</p>" +
+            "<img class='exampleSlot' src='images/slot_machine.png' >"
+            + "<p style='text-align:center'> On every step, you will be required to choose one of them, as explained next.</p>",
+
+            "<p> On each step, icons will pop on the screen of <b>two of the four slot machines.</b> These icons indicate what machines you are currently able to choose.<br><br>"
+            + "The keyboard keys you will need to use in order to make a selection are <b>S, F, J, and L</b>, as specified in the examples following.</p>"
+            + "<img class='exampleDeck' src='images/practice_elements/heart_bluish_blank.png' >"+"<img class='exampleDeck' src=" + background + " >"+
+            "<img class='exampleDeck' src=" + background + " >"+"<img class='exampleDeck' src='images/practice_elements/star_purple_blank.png' >",
+            "<p>Here, for example, you could select the <b>left machine by pressing 'S'</b> or the <b>right machine by pressing 'L'</b> on your keyboard.</p>"
+            + "<img class='exampleDeck' src='images/practice_elements/heart_bluish_blank.png' >"+"<img class='exampleDeck' src=" + background + " >"+
+            "<img class='exampleDeck' src=" + background + " >"+"<img class='exampleDeck' src='images/practice_elements/star_purple_blank.png' >",
+            "<p>Here, however, you could select the <b>middle-left machine by pressing 'F'</b> or the <b>middle-right machine by pressing 'J'</b> on your keyboard.</p>"
+            + "<img class='exampleDeck' src=" + background + " >"+"<img class='exampleDeck' src='images/practice_elements/star_bluish_blank.png' >"+
+            "<img class='exampleDeck' src='images/practice_elements/heart_purple_blank.png' >"+"<img class='exampleDeck' src=" + background + " >",
+            "<p style='text-align:left'>After selecting a machine, you will see an outcome in the middle of the screen, <b>the outcome could be either winning +1 coin</b>, like here.</p>"
+            + "<img class='reward' src='images/won1-no-back1.png'><br>" + "<img class='exampleDeck' src=" + background + " >"+"<img class='exampleDeck' src=" + background + " >"+
+            "<img class='exampleDeck' src='images/practice_reward/heart_purple_blank.png' >"+"<img class='exampleDeck' src=" + background + " ><br><br>",
+            "<p style='text-align:left'>Or it could be <b>not winning a coin</b>, like in this case.</p>"
+            + "<img class='reward' src='images/zero_coins.png'><br>" + "<img class='exampleDeck' src=" + background + " >"+"<img class='exampleDeck' src=" + background + " >"+
+            "<img class='exampleDeck' src='images/practice_reward/heart_purple_blank.png' >"+"<img class='exampleDeck' src=" + background + " ><br><br>",
+            "Both today and tomorrow you will play <b>3 rounds with 50 steps each.</b> <br>",
+            "Your task is to try and <b>figure out which slot machine is the best one to choose on each step</b>.",
+            "<p>For example, if you are offered the left and right slot machines <b>you need to choose based on your previous experience when choosing each machine up to this point</b>.<br>"
+            , "How good a slot machine is <b>can slowly change along the 50-steps of each round</b>, so you can't stop learning."
+            ,"Please note that each slot machine has its own winning chances. It could be that two slot machines are giving a coin most of the time, that one is much better than the other or that both don't often give a coin. <br><b>The point is you need to learn specifically about each slot machine.</b>",
+            "Every new round (50 steps) <b>the winning chances of the machines will be different</b>, so you will need to learn them over again.",
+            "Please do not confuse the slot machines with the icons on their screen. The icons are just there to show you which machines you can choose. <br><b>The icons do not affect the chances of winning a coin</b>.",
+            "<p style='text-align:center'><u>Three important things to remember:</u><br>"
+            + "1. <b>How good a slot machine is can change along with the round - </b> somewhat like the value of market products that sometimes is worth more and sometimes less."
+            + "<br><br>2.<b> Only the position of the machines (left, left-middle, right-middle, right) is related to your chances of winning - </b> which icon is on its screen does not influence the chances of winning a coin.<br><br>"
+            + " 3. <b>The chance that each machine will give you money has nothing to do with the other machines - </b> you can't learn about one machine from the money rewards you got from another.</p>"],
+            show_clickable_nav: true
+        };
+
+        var start_instructions_test = {
+            on_start: function () {
+                if (document.querySelector('#cursor-toggle') != null)
+                    document.querySelector('#cursor-toggle').remove()
+            },
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: "<p> <br><br> You will now move on to a quick quiz to make sure you understood the instructions. If you make a mistake, you will need to go through the instructions again. Scroll down until you answer all questions <br><br> <b> Press any key to continue</b></p>"
+        }
+        var Q1_options = ["2", "4", "6", "8"]
+        var Q2_options = ["1", "2", "3", "4"]
+        var Q3_options = ["Click on it.", "Press the LEFT or RIGHT arrow keys.", "Press the 'S', 'F', 'J' or 'L' keys."];
+        var Q4_options = ["I can either win 1 coin or not win any coin, depending on the winning chances of the slot machine in the chosen location","I can either win 1 coin or not win any coin, depending on the winning chances of the icon in the chosen machine", "I can win any value between 0 and 100"]
+        var Q5_options = ["The goal is to learn which icon has better winning chances", "The goal is to learn at any point which slot machine has better winning chances"]
+        var Q6_options = ["True, that's why I should keep on learning", "False, it stays the same along the round"];
+        var Q7_options = ["True, the winning chances are the same on each round","False, I need to learn all over again on each round",];
+        var Q8_options = ["True, if one machine is good it means the other is bad", "False, you can learn about a machine only by choosing it"];
+        var Q9_options = ["True - the icons are related to the winning chances.", "False - you won't win more or less by choosing one icon over the other. Only the position of the machines is related to your chances of winning"];
+        var Q10_options = ["I will be paid today after I finish", "I will be paid only after finishing the second session tomorrow"];
+
+        var instructions_test = {
+            type: jsPsychSurveyMultiChoice,
+            questions: [
+                { prompt: "How many slot machines are there in total in the game?", name: 'machines_amount', correct: "4", options: Q1_options, required: true },
+                { prompt: "How many slot machines are you able to choose between on each step?", name: 'machines_with_icons', correct: "2", options: Q2_options, required: true },
+                { prompt: "How do you choose a machine?", name: 'choose_machine', correct: "Press the 'S', 'F', 'J' or 'L' keys.", options: Q3_options, required: true },
+                { prompt: "What can happen after choosing a machine?", name: 'outcome', correct: "I can either win 1 coin or not win any coin, depending on the winning chances of the slot machine in the chosen location", options: Q4_options, required: true },
+                { prompt: "What is the goal of the game?", name: 'game_goal', correct: "The goal is to learn at any point which slot machine has better winning chances", options: Q5_options, required: true },
+                { prompt: "During each round, the winning chances of each slot machine will slowly change", name: 'in_rounds', correct: "True, that's why I should keep on learning", options: Q6_options, required: true },
+                { prompt: "Between rounds, the winning chances will be the same", name: 'between_rounds', correct: "False, I need to learn all over again on each round", options: Q7_options, required: true },
+                { prompt: "If one machine frequently leads you to a coin, the other machines will probably lead you to a coin only occasionally.", name: 'value_independence', correct:"False, you can learn about a machine only by choosing it", options: Q8_options, required: true },
+                { prompt: "You might win more if you select a machine based on the icon on its screen.", name: 'machine_value', correct:  "False - you won't win more or less by choosing one icon over the other. Only the position of the machines is related to your chances of winning", options: Q9_options, required: true },
+                { prompt: "When will you be paid?", options: Q10_options, required: true }
+
+            ],
+        };
+
+        var if_trial = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: "<p>Sorry. You made a mistake.<br>"
+                + "Let's go back to the instructions. "
+                + "Please read them carefully before submitting your answers. <br>"
+                + "Thank you!",
+            choices: ['Back to instructions'],
+            on_finish: function () {
+                practice_number = -1;
+                }
+            }
+        var to_repeat;
+        var check_answers = {
+            timeline: [if_trial],
+            conditional_function: function () {
+                // get the data from the previous trial,
+                // and check which key was pressed
+                to_repeat = false;
+                var responses_to_test = jsPsych.data.getLastTrialData().trials[0].response
+                for (i = 0; i < instructions_test.questions.length; i++) {
+                    current_name = instructions_test.questions[i].name;
+                    current_correct = instructions_test.questions[i].correct
+                    if (current_correct != responses_to_test[current_name]) {
+                        to_repeat = true;
+                        return to_repeat
+                    }
+                    else {
+                        to_repeat = false;
+
+                    }
+                }
+                return to_repeat
+            }
+        }
+        /*---------------------------------------------------- 
+        Functions for card game
+        ------------------------------------------------------*/
+
+        function find_background_loc(arr) {
+            var ret=[false,false,false,false]
+            var i
+            for(i=0; i<arr.length; i++){
+                if (arr[i]==background){
+                    ret[i]=true;
+                }
+            }
+            return ret;
+        }
+
+        function draw_show_cards(deck) {
+            if (block_type==0){ //only colors
+                card1=deck[0]
+                card2= deck[1]
+            }
+            else if (block_type==1){// colors+shapes
+                index= jsPsych.randomization.sampleWithReplacement([0,2],1)
+                if(index==0){
+                    card1=deck[0]
+                    card2=deck[1]
+                }
+                else{
+                    card1=deck[2]
+                    card2=deck[3]
+                }
+            }
+            else{ //colors+shapes+pattern
+                index= jsPsych.randomization.sampleWithReplacement([0,2,4,6],1)
+                if(index==0){
+                    card1=deck[0]
+                    card2=deck[1]
+                }
+                else if (index==2){
+                    card1=deck[2]
+                    card2=deck[3]
+                }
+                else if (index==4){
+                    card1=deck[4]
+                    card2=deck[5]
+                }
+                else{
+                    card1=deck[6]
+                    card2=deck[7]
+                }
+            }
+
+            arr= jsPsych.randomization.shuffle([card1,card2,background, background])
+            left_card=arr[0];
+            mid_left_card=arr[1];
+            mid_right_card=arr[2];
+            right_card=arr[3];
+            background_locs=find_background_loc(arr)
+
+            if (practice_number == -1){ //if we are not in practice
+                for (var i = 0; i < 4; i++){
+                    if (background_locs[i] == 0){
+                        if (arr[i] == card1){
+                            first_loc = i
+                        }
+                        else {
+                            second_loc = i
+                        }
+                    }
+                }
+            }
+
+
+            left_with_tag = "<img class='card_left' src='" + left_card + "'>"
+            mid_left_with_tag = "<img class='card_middle_left' src='" + mid_left_card + "'>"
+            mid_right_with_tag = "<img class='card_middle_right' src='" + mid_right_card + "'>"
+            right_with_tag = "<img class='card_right' src='" + right_card + "'>"
+
+            return left_with_tag +  mid_left_with_tag + mid_right_with_tag + right_with_tag;
+        }
+
+        function show_choice() {
+            last_choice = jsPsych.data.getLastTrialData().values()[0].response
+
+            left_with_tag = "<img class='card_left' src='" + background + "'>"
+            mid_left_with_tag = "<img class='card_middle_left' src='" + background + "'>"
+            mid_right_with_tag = "<img class='card_middle_right' src='" + background + "'>"
+            right_with_tag = "<img class='card_right' src='" + background + "'>"
+
+            if (last_choice == 's') {
+                if (background_locs[0]==true){
+                    invalid=true
+                } 
+                else{
+                    selected = 0
+                    if (practice_number != -1) { //we're practicing
+                        card_selected = practice_deck_images[block_type].indexOf(left_card)
+                        left_to_show = practice_reward_images[block_type][card_selected]
+                    }
+                    else{
+                        card_selected = test_deck_images[block_type].indexOf(left_card)
+                        left_to_show = reward_deck_images[block_type][card_selected]
+                    }
+                    left_with_tag = "<img class='card_left' src='" + left_to_show + "'>"
+                }
+            }
+            else if (last_choice == 'f') {
+                if (background_locs[1]==true){
+                    invalid=true
+                } 
+                else{
+                    selected = 1
+                    if (practice_number != -1) { //we're practicing
+                        card_selected = practice_deck_images[block_type].indexOf(mid_left_card)
+                        mid_left_to_show = practice_reward_images[block_type][card_selected]
+                    }
+                    else{
+                        card_selected = test_deck_images[block_type].indexOf(mid_left_card)
+                        mid_left_to_show = reward_deck_images[block_type][card_selected]
+                    }
+                    mid_left_with_tag = "<img class='card_middle_left' src='" + mid_left_to_show + "'>"
+                }
+            }
+            else if (last_choice == 'j') {
+                if (background_locs[2]==true){
+                    invalid=true
+                } 
+                else{
+                    selected = 2
+                    if (practice_number != -1) { //we're practicing
+                        card_selected = practice_deck_images[block_type].indexOf(mid_right_card)
+                        mid_right_to_show = practice_reward_images[block_type][card_selected]
+                    }
+                    else{
+                        card_selected = test_deck_images[block_type].indexOf(mid_right_card)
+                        mid_right_to_show = reward_deck_images[block_type][card_selected]
+                    }
+                    mid_right_with_tag = "<img class='card_middle_right' src='" + mid_right_to_show + "'>"
+                }
+            }
+            else if (last_choice == 'l') {
+                if (background_locs[3]==true){
+                    invalid=true
+                } 
+                else{
+                    selected = 3
+                    if (practice_number != -1) { //we're practicing
+                        card_selected = practice_deck_images[block_type].indexOf(right_card)
+                        right_to_show = practice_reward_images[block_type][card_selected]
+                    }
+                    else{
+                        card_selected = test_deck_images[block_type].indexOf(right_card)
+                        right_to_show = reward_deck_images[block_type][card_selected]
+                    }
+                    right_with_tag = "<img class='card_right' src='" + right_to_show + "'>"
+                }
+            }
+            else{
+                selected = null
+                reward = 0
+                if (last_choice!= null){
+                    invalid_from_all_keyboard=true;
+                    return '<div style="font-size:40px; position: absolute; left: 180px; top: 300px;">Please choose only between "S", "F", "J" and "L"!</div>'
+                }
+                else {
+                    return '<div style="font-size:40px; position: absolute; left: 420px; top: 300px;">Please respond faster!</div>'
+                }
+            }
+            if (invalid==true) {
+                selected = null
+                reward = 0
+                return '<div style="font-size:40px; position: absolute; left: 380px; top: 300px;">Please choose a valid option!</div>'
+            }
+            return left_with_tag + mid_left_with_tag + mid_right_with_tag + right_with_tag;
+
+        }
+
+        function show_reward (){
+            key_selected = jsPsych.data.getLastTrialData().values()[0].key_selected
+            left_with_tag = "<img class='card_left' src='" + background + "'>"
+            mid_left_with_tag = "<img class='card_middle_left' src='" + background + "'>"
+            mid_right_with_tag = "<img class='card_middle_right' src='" + background + "'>"
+            right_with_tag = "<img class='card_right' src='" + background + "'>"
+            card_selected = jsPsych.data.getLastTrialData().values()[0].card_selected
+
+            if (key_selected == 0) {
+                if (practice_number != -1) { //we're practicing
+                    left_to_show = practice_reward_images[block_type][card_selected]
+                }
+                else{
+                    left_to_show = reward_deck_images[block_type][card_selected]
+                }
+                left_with_tag = "<img class='card_left' src='" + left_to_show + "'>"
+            }
+            else if (key_selected == 1) {
+                if (practice_number != -1) { //we're practicing
+                    mid_left_to_show = practice_reward_images[block_type][card_selected]
+                }
+                else{
+                    mid_left_to_show = reward_deck_images[block_type][card_selected]
+                }
+                mid_left_with_tag = "<img class='card_middle_left' src='" + mid_left_to_show + "'>"
+            }
+            else if (key_selected == 2) {
+                if (practice_number != -1) { //we're practicing
+                    mid_right_to_show = practice_reward_images[block_type][card_selected]
+                }
+                else{
+                    mid_right_to_show = reward_deck_images[block_type][card_selected]
+                }
+                mid_right_with_tag = "<img class='card_middle_right' src='" + mid_right_to_show + "'>"
+            }
+            else if (key_selected == 3) {
+                if (practice_number != -1) { //we're practicing
+                    right_to_show = practice_reward_images[block_type][card_selected]
+                }
+                else{
+                    right_to_show = reward_deck_images[block_type][card_selected]
+                }
+                right_with_tag = "<img class='card_right' src='" + right_to_show + "'>"
+            }
+            else if (invalid==true) {
+                invalid=false
+                return '<div style="font-size:40px; position: absolute; left: 380px; top: 300px;">Please choose a valid option!</div>'  + '<p><b>Press SPACE to continue</b></p>'
+            }
+            else if( invalid_from_all_keyboard==true) {
+                invalid_from_all_keyboard=false
+                return '<div style="font-size:40px; position: absolute; left: 180px; top: 300px;">Please choose only between "S", "F", "J" and "L"!</div>'+ '<p><b>Press SPACE to continue</b></p>'
+            }
+            else {
+                return '<div style="font-size:40px; position: absolute; left: 420px; top: 300px;">Please respond faster!</div>'  + '<p><b>Press SPACE to continue</b></p>'
+            }
+            prob_reward = FB_matrix[selected][current_cards_exp_trial];
+            prob_unreward = 1 - prob_reward;
+            reward = jsPsych.randomization.sampleWithReplacement([0, 1], 1, [prob_unreward, prob_reward])[0];
+            if (practice_number == -1){ //count reward only if we're in test blocks
+                sum_of_reward += reward;
+            }
+            reward_to_show = "<img class=reward src='" + reward_images[reward] + "'>"
+            return left_with_tag + mid_left_with_tag + mid_right_with_tag + right_with_tag  + reward_to_show  + '<br><br><br><br><br><br><br><br><p><b>Press SPACE to continue</b></p>'
+        }
+
+        function images_for_block_start() {
+            images = test_deck_images[block_type]
+            return images
+        }
+
+        function insert_props_to_data(data, card_selected){
+            data.color_selected = -1
+            data.shape_selected = -1
+            data.texture_selected = 'blank'
+            data.color_not_selected = -1
+            data.shape_not_selected = -1
+            data.texture_not_selected = 'blank'
+            if (card_selected == 'images/test_elements/pink_triangle.png'){
+                data.color_selected = 'pink'
+                data.color_not_selected = 'green'
+                data.shape_selected = 'triangle'
+                data.shape_not_selected = 'triangle'
+            }
+            else if (card_selected == 'images/test_elements/green_triangle.png'){
+                data.color_selected = 'green'
+                data.color_not_selected = 'pink'
+                data.shape_selected = 'triangle'
+                data.shape_not_selected = 'triangle'
+            }
+            else if (card_selected == 'images/test_elements/red_rhombus.png'){
+                data.color_selected = 'red'
+                data.color_not_selected = 'yellow'
+                data.shape_selected = 'rhombus'
+                data.shape_not_selected = 'pentagon'
+            }
+            else if (card_selected == 'images/test_elements/yellow_pentagon.png'){
+                data.color_selected = 'yellow'
+                data.color_not_selected = 'red'
+                data.shape_selected = 'pentagon'
+                data.shape_not_selected = 'rhombus'
+            }
+            else if (card_selected == 'images/test_elements/red_pentagon.png'){
+                data.color_selected = 'red'
+                data.color_not_selected = 'yellow'
+                data.shape_selected = 'pentagon'
+                data.shape_not_selected = 'rhombus'
+            }
+            else if (card_selected == 'images/test_elements/yellow_rhombus.png'){
+                data.color_selected = 'yellow'
+                data.color_not_selected = 'red'
+                data.shape_selected = 'rhombus'
+                data.shape_not_selected = 'pentagon'
+            }
+            else if (card_selected == 'images/test_elements/blue_circle_heart.png'){
+                data.color_selected = 'blue'
+                data.color_not_selected = 'orange'
+                data.shape_selected = 'circle'
+                data.shape_not_selected = 'square'
+                data.texture_selected = 'heart'
+                data.texture_not_selected = 'star'
+            }
+            else if (card_selected == 'images/test_elements/orange_square_star.png'){
+                data.color_selected = 'orange'
+                data.color_not_selected = 'blue'
+                data.shape_selected = 'square'
+                data.shape_not_selected = 'circle'
+                data.texture_selected = 'star'
+                data.texture_not_selected = 'heart'
+            }
+            else if (card_selected == 'images/test_elements/orange_circle_heart.png'){
+                data.color_selected = 'orange'
+                data.color_not_selected = 'blue'
+                data.shape_selected = 'circle'
+                data.shape_not_selected = 'square'
+                data.texture_selected = 'heart'
+                data.texture_not_selected = 'star'
+            }
+            else if (card_selected == 'images/test_elements/blue_square_star.png'){
+                data.color_selected = 'blue'
+                data.color_not_selected = 'orange'
+                data.shape_selected = 'square'
+                data.shape_not_selected = 'circle'
+                data.texture_selected = 'star'
+                data.texture_not_selected = 'heart'
+            }
+            else if (card_selected == 'images/test_elements/blue_square_heart.png'){
+                data.color_selected = 'blue'
+                data.color_not_selected = 'orange'
+                data.shape_selected = 'square'
+                data.shape_not_selected = 'circle'
+                data.texture_selected = 'heart'
+                data.texture_not_selected = 'star'
+            }
+            else if (card_selected == 'images/test_elements/orange_circle_star.png'){
+                data.color_selected = 'orange'
+                data.color_not_selected = 'blue'
+                data.shape_selected = 'circle'
+                data.shape_not_selected = 'square'
+                data.texture_selected = 'star'
+                data.texture_not_selected = 'heart'
+            }
+            else if (card_selected == 'images/test_elements/orange_square_heart.png'){
+                data.color_selected = 'orange'
+                data.color_not_selected = 'blue'
+                data.shape_selected = 'square'
+                data.shape_not_selected = 'circle'
+                data.texture_selected = 'heart'
+                data.texture_not_selected = 'star'
+            }
+            else if (card_selected == 'images/test_elements/blue_circle_star.png'){
+                data.color_selected = 'blue'
+                data.color_not_selected = 'orange'
+                data.shape_selected = 'circle'
+                data.shape_not_selected = 'square'
+                data.texture_selected = 'star'
+                data.texture_not_selected = 'heart'
+            }
+        }
+
+        /*This function downloads the data */
+        var subN = localStorage.subN
+        var IDsub = Date.now();
+        function download_csv(csv) {
+            var hiddenElement = document.createElement('a');
+            file_name = "WM_visual_array_" + subN + "_" + IDsub.toString() + ".csv"
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = file_name;
+            hiddenElement.click();
+        }
+        /*---------------------------------------------------- 
+        Variabels for card game
+        ------------------------------------------------------*/
+        var current_cards_practice_trial = 0;
+        var current_cards_exp_trial = 0;
+        var block = 0;
+        var blocks = 3;
+        var left_card;
+        var right_card;
+        var mid_left_card;
+        var mid_right_card;
+        var selected;
+        var reward;
+
+        /*---------------------------------------------------- 
+        Start practice
+        ------------------------------------------------------*/
+        
+        var start_practice= {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: '<div><b>Good job, you learned the instructions!</b><br> We will now do a few practice trials. <br> <u>Please keep your left-hand fingers on <b>"S"</b> and <b>"F"</b> and your right-hand fingers on <b>"J"</b> and <b>"L"</b></u>. <br><br> <b> Press any key to begin</b></div>',
+            post_trial_gap: 1000,
+            data: { condition_random_walk: function(){return condition_random_walk}},
+            on_finish: function () { 
+                document.querySelector('head').insertAdjacentHTML('beforeend', '<style id="cursor-toggle"> html { cursor: none; } </style>') 
+            },
+        }
+
+        var fixation_cards = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function(){
+                left_with_tag = "<img class='card_left' src='" + background + "'>"
+                mid_left_with_tag = "<img class='card_middle_left' src='" + background + "'>"
+                mid_right_with_tag = "<img class='card_middle_right' src='" + background + "'>"
+                right_with_tag = "<img class='card_right' src='" + background + "'>"
+                return left_with_tag + mid_left_with_tag + mid_right_with_tag + right_with_tag;
+            },
+            choices: "NO_KEYS",            
+            trial_duration: 900
+        }
+
+        var practice_cards1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+                practice_number+=1;
+                block_type=jsPsych.randomization.sampleWithoutReplacement([0,1,2], 1);
+                return draw_show_cards(practice_deck_images[block_type])
+            },
+            choices: "ALL_KEYS",
+            trial_duration: 6000,
+            data: { phase: 'practice', trial_name: 'cards1', trial_num: function () { return current_cards_practice_trial } },
+
+        }
+
+        var practice_choice1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: show_choice,
+            choices: "NO_KEYS",            
+            trial_duration: 500,
+            data: { phase: 'practice', trial_name: 'choice1', trial_num: function () { return current_cards_practice_trial } },
+            on_finish: function (data) {
+                data.key_selected = selected
+                if (selected == 0) {
+                    data.card_selected = practice_deck_images[block_type].indexOf(left_card)
+                }
+                else if (selected == 1) {
+                    data.card_selected = practice_deck_images[block_type].indexOf(mid_left_card)
+                }
+                else if (selected == 2) {
+                    data.card_selected = practice_deck_images[block_type].indexOf(mid_right_card)
+                }
+                else if (selected == 3) {
+                    data.card_selected = practice_deck_images[block_type].indexOf(right_card)
+                }
+            }
+        }
+
+        var practice_reward1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+                return show_reward()
+            },
+            choices: [' '],
+            trial_duration: 6000,
+            data: { phase: 'practice', trial_name: 'reward1', trial_num: function () { return current_cards_practice_trial } }
+            , on_finish: function (data) {
+                data.reward = reward;
+            }
+        }
+
+        /*---------------------------------------------------- 
+        Start exp part of card game
+        ------------------------------------------------------*/
+
+        var start_exp = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: '<div> Good job! Practice completed. <br> <br> We will now move on to the real game. Please do your best to respond as fast as you can while trying to earn as many coins as you can. <br> Good luck!<br><br> <b>Press any key to continue.</b></div>',
+            post_trial_gap: 1000,
+            on_finish: function () { 
+                practice_number = -1;
+                block_type=Number(jsPsych.randomization.sampleWithoutReplacement([0,1,2], 1));
+            },
+        }
+
+        var start_block = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+                block_type=(block_type+1)%3;
+                FB_matrix= jsPsych.randomization.shuffle(FB_matrix);
+                start_block_str= '<p><b><u>Test round ' + (block + 1) + ' out of ' + (blocks) + '</u></b></p>' + '<p style="text-align: center"> You will now start a test round.</p>'
+                    + '<p style="text-align: center">Use the response key that matches the location of the slot machine you select ("S", "F", "J" or "L", in correspondence) to make your selection. <br> <b>Please do your best to win as many coins as possible!</b><br> </p>'
+                    + '<p style="text-align: center"><u>Remember that:</u> <br> 1) How "good" each machine is can slowly change along the round <br> 2) Only the machines (not the icons on their screens) are related to you winning coins <br> 3) You can not learn about one machine from choosing another one </p>'
+                    + '<p><b>Press SPACE to start</b></p>'
+                return start_block_str;
+            },
+            choices: [' '],
+            post_trial_gap: 1000,
+            data: {left_prob: function () { return FB_matrix[0][0]}, mid_left_prob: function () { return FB_matrix[1][0]},
+            mid_right_prob: function () { return FB_matrix[2][0]}, right_prob: function () { return FB_matrix[3][0]}, block_type: function () { return block_type},
+            block:  function () { return block}
+            },
+            on_finish: function () {document.querySelector('head').insertAdjacentHTML('beforeend', '<style id="cursor-toggle"> html { cursor: none; } </style>') },
+        }
+
+        var exp_cards1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+                return draw_show_cards(images_for_block_start())
+            },
+            choices: "ALL_KEYS",
+            trial_duration: 6000,
+            data: { phase: 'exp', trial_name: 'cards1', trial_num: function () { return current_cards_exp_trial },
+                block_type: function () { return block_type} },
+                on_finish: function (data) {
+                data.first_loc = first_loc
+                data.second_loc = second_loc
+            }
+        }
+
+        var exp_choice1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: show_choice,
+            choices: "NO_KEYS",
+            trial_duration: 500,
+            //trial_duration: 3000,
+            data: { phase: 'exp', trial_name: 'choice1', trial_num: function () { return current_cards_exp_trial },
+                block_type: function () { return block_type} },
+            on_finish: function (data) {
+                data.key_selected = selected
+                data.first_loc = first_loc
+                data.second_loc = second_loc
+                var not_selected;
+                if (selected == first_loc) {//first_loc was selected
+                    not_selected = second_loc
+                } else {
+                    not_selected = first_loc
+                }
+                data.card_selected = -1;
+                data.card_not_selected = -1;
+                if (selected == 0) {
+                    data.card_selected = images_for_block_start().indexOf(left_card)
+                    insert_props_to_data(data, left_card)
+                }
+                else if (selected == 1) {
+                    data.card_selected = images_for_block_start().indexOf(mid_left_card)
+                    insert_props_to_data(data, mid_left_card)
+                }
+                else if (selected == 2) {
+                    data.card_selected = images_for_block_start().indexOf(mid_right_card)
+                    insert_props_to_data(data, mid_right_card)
+                }
+                else if (selected == 3) {
+                    data.card_selected = images_for_block_start().indexOf(right_card)
+                    insert_props_to_data(data, right_card)
+                }
+                if (not_selected == 0) {
+                    data.card_not_selected = images_for_block_start().indexOf(left_card)
+                }
+                else if (not_selected == 1) {
+                    data.card_not_selected = images_for_block_start().indexOf(mid_left_card)
+                }
+                else if (not_selected == 2) {
+                    data.card_not_selected = images_for_block_start().indexOf(mid_right_card)
+                }
+                else if (not_selected == 3) {
+                    data.card_not_selected = images_for_block_start().indexOf(right_card)
+                }
+            }
+        }
+        var exp_reward1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+                return show_reward()
+            },
+            choices: [' '],
+            trial_duration: 6000,
+            data: {
+                phase: 'exp', trial_name: 'reward1', trial_num: function () { return current_cards_exp_trial },
+                block: function () { return block }, block_type: function () { return block_type}
+            },
+
+            on_finish: function (data) {
+                data.reward = reward;
+                data.prob_reward = prob_reward
+                
+                data.key_selected = selected
+                data.first_loc = first_loc
+                data.second_loc = second_loc
+                var not_selected;
+                if (selected == first_loc) {//first_loc was selected
+                    data.prob_not_selected = FB_matrix[second_loc][current_cards_exp_trial];
+                    not_selected = second_loc
+                } else {
+                    data.prob_not_selected = FB_matrix[first_loc][current_cards_exp_trial];
+                    not_selected = first_loc
+                }
+                current_cards_exp_trial+=1;
+                data.card_selected = -1;
+                data.card_not_selected = -1;
+                if (selected == 0) {
+                    data.card_selected = images_for_block_start().indexOf(left_card)
+                    insert_props_to_data(data, left_card)
+                }
+                else if (selected == 1) {
+                    data.card_selected = images_for_block_start().indexOf(mid_left_card)
+                    insert_props_to_data(data, mid_left_card)
+                }
+                else if (selected == 2) {
+                    data.card_selected = images_for_block_start().indexOf(mid_right_card)
+                    insert_props_to_data(data, mid_right_card)
+                }
+                else if (selected == 3) {
+                    data.card_selected = images_for_block_start().indexOf(right_card)
+                    insert_props_to_data(data, right_card)
+                }
+                if (not_selected == 0) {
+                    data.card_not_selected = images_for_block_start().indexOf(left_card)
+                }
+                else if (not_selected == 1) {
+                    data.card_not_selected = images_for_block_start().indexOf(mid_left_card)
+                }
+                else if (not_selected == 2) {
+                    data.card_not_selected = images_for_block_start().indexOf(mid_right_card)
+                }
+                else if (not_selected == 3) {
+                    data.card_not_selected = images_for_block_start().indexOf(right_card)
+                }
+                data.prob_option1 = FB_matrix[0][current_cards_exp_trial];
+                data.prob_option2 = FB_matrix[1][current_cards_exp_trial];
+                data.prob_option3 = FB_matrix[2][current_cards_exp_trial];
+                data.prob_option4 = FB_matrix[3][current_cards_exp_trial];
+            }
+        }
+
+        var finish_block = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function () {
+    
+                finish_block_string = '<p>Good job!</p>' + '<p style="text-align: center"><br> Test round ' + (block + 1) + ' out of ' + (blocks) + ' is over.'
+                if (block != 2) {
+                    finish_block_string += ' You can stretch a little and take a short break while sitting in front of the screen, if needed.</p><p> <br><br><br><b>Press SPACE to continue</b>  </p>'
+                }
+                return finish_block_string
+            },
+            post_trial_gap: 1000,
+            choices: [' '],
+            on_finish: function () {
+                block += 1;
+                current_cards_exp_trial = 0;
+            }
+        }
+
+        var finish_learning = {
+            on_start: function () {
+                if (document.querySelector('#cursor-toggle') != null)
+                    document.querySelector('#cursor-toggle').remove()
+            },
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function () {
+                return "<p><b>Congratulations!</b> <br><br> You successfully finished this part of the task. <br>"
+                    + "<b>REMEMBER:</b> You will be paid only after completing the second part of the task tomorrow. <br></p>"
+            },
+            choices:["Click here to return to Prolific and complete this part of the study"]
+            , button_html: ['<a href=https://app.prolific.co/submissions/complete?cc=XXXXXXX target="_blank"> %choice%</a>']
+        }
+
+
+        /*---------------------------------------------------- 
+        Define timeline for card part
+        ------------------------------------------------------*/
+        var demo_procedure = {
+            timeline: [fixation_cards, practice_cards1, practice_choice1, practice_reward1],
+            repetitions: 1  //8.15 sec per trial on avg , 20 trials = 180 sec
+        }
+
+        var instructions_loop = {
+            timeline: [instructions_cards, start_practice, demo_procedure, start_instructions_test, instructions_test, check_answers],
+            loop_function: function () {
+                if (to_repeat == true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        var test_procedure = {
+            timeline: [fixation_cards, exp_cards1, exp_choice1, exp_reward1],
+            repetitions: 1 //8.15 sec per trial on avg - 50 trials per block. 6.8 minutes on avg per block
+        }
+        var test_blocks = {
+            timeline: [start_block, test_procedure, finish_block],
+            repetitions: 1
+        };
+
+        var full_procedure = {
+            //timeline: [instructions_loop, start_exp, test_blocks, finish_learning]
+            timeline: [start_exp, test_blocks, finish_learning]
+        }
+        timeline.push(instructions_loop,full_procedure)
+        /* finish connection with pavlovia.org 
+        var pavlovia_finish = {
+        type: jsPsychPavlovia,
+        command: "finish",
+        participantId: subject_id
+        };
+        timeline.push(pavlovia_finish);*/
+        jsPsych.run(timeline);
+    </script>
+
+</body>
+
+</html>

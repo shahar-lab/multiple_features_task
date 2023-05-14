@@ -1,0 +1,143 @@
+
+    img {
+        height: 250px;
+        width: 200px;
+    }
+
+    p {
+        padding: 10px
+    }
+
+    img.fullscreen {
+        height: 150px;
+        width: 526px;
+    }
+
+    :root {
+        --top_middle: 0px;
+        --left_middle: 0px;
+
+        --top_a: 0px;
+        --left_a: 0px;
+        --top_b: 0px;
+        --left_b: 0px;
+        --top_c: 0px;
+        --left_c: 0px;
+
+
+        --top_d: 0px;
+        --right_d: 0px;
+        --top_e: 0px;
+        --right_e: 0px;
+        --top_f: 0px;
+        --right_f: 0px;
+
+        --bottom_g: 0px;
+        --right_g: 0px;
+        --bottom_h: 0px;
+        --right_h: 0px;
+        --bottom_i: 0px;
+        --right_i: 0px;
+
+
+        --bottom_j: 0px;
+        --left_j: 0px;
+        --bottom_k: 0px;
+        --left_k: 0px;
+        --bottom_l: 0px;
+        --left_l: 0px;
+
+       --upper1: 0px;
+       --upper2: 0px;
+       --upper3: 0px;
+
+       --lower1: 0px;
+       --lower2: 0px;
+       --lower3: 0px;
+
+        --left_card: 0px;
+        --middle_left_card: 0px;
+        --middle_right_card: 0px;
+        --right_card: 0px;
+        --top_card: 0px;
+        --top_reward: 0px;
+        --left_reward: 0px;
+    }
+
+
+    .reward {
+
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 110px;
+        width: 100px;
+    }
+
+    .group {
+        height: 135px;
+        width: 487px;
+    }
+
+    .example {
+        height: 135px;
+        width: 217px;
+    }
+
+    .block_example {
+        height: 130px;
+        width: 130px;
+    }
+
+    .examplecard {
+        height: 200px;
+        width: 200px;
+    }
+
+    .exampleDeck {
+        height: 130px;
+        width: 130px;
+        margin-right: 5px;
+    }
+
+    .exampleLoc {
+        height: 223px;
+        width: 960px;
+    }
+
+    .exampleReward {
+        height: 224px;
+        width: 566px;
+    }
+
+    img.card_left {
+        position: fixed;
+        height: 130px;
+        width: 130px;
+        left: var(--left_card);
+        top: var(--top_card);
+    }
+
+    img.card_right {
+        position: fixed;
+        height: 130px;
+        width: 130px;
+        right: var(--right_card);
+        top: var(--top_card);
+    }
+
+    img.card_middle_left {
+        position: fixed;
+        height: 130px;
+        width: 130px;
+        left: var(--middle_left_card);
+        top: var(--top_card);
+    }
+
+    img.card_middle_right {
+        position: fixed;
+        height: 130px;
+        width: 130px;
+        right: var(--middle_right_card);
+        top: var(--top_card);
+    }
