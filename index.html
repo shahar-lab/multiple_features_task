@@ -962,7 +962,7 @@
         ------------------------------------------------------*/
         var demo_procedure = {
             timeline: [fixation_cards, practice_cards1, practice_choice1, practice_reward1],
-            repetitions: 1  //8.15 sec per trial on avg , 20 trials = 180 sec
+            repetitions: 20  //8.15 sec per trial on avg , 20 trials = 180 sec
         }
 
         var instructions_loop = {
@@ -978,11 +978,11 @@
 
         var test_procedure = {
             timeline: [fixation_cards, exp_cards1, exp_choice1, exp_reward1],
-            repetitions: 1 //8.15 sec per trial on avg - 50 trials per block. 6.8 minutes on avg per block
+            repetitions: 50 //8.15 sec per trial on avg - 75 trials per block. 6.8 minutes on avg per block
         }
         var test_blocks = {
             timeline: [start_block, test_procedure, finish_block],
-            repetitions: 1
+            repetitions: 3
         };
 
         var full_procedure = {
